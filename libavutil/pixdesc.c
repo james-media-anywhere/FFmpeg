@@ -240,6 +240,19 @@ static const AVPixFmtDescriptor av_pix_fmt_descriptors[AV_PIX_FMT_NB] = {
             { 0, 8, 6, 6, 10 },        /* V */
         },
     },
+    [AV_PIX_FMT_UYVY422_10] = {
+        .name = "uyvy422_10",
+        .nb_components = 3,
+        .log2_chroma_w = 1,
+        .log2_chroma_h = 0,
+        .comp = {
+            { 0, 20, 10, 0, 10 },        /* Y */
+            { 0, 40, 0, 0, 10 },        /* U */
+            { 0, 40, 20, 0, 10 },        /* V */
+        },
+        .flags = AV_PIX_FMT_FLAG_BITSTREAM,
+    },
+
     [AV_PIX_FMT_Y210BE] = {
         .name = "y210be",
         .nb_components = 3,

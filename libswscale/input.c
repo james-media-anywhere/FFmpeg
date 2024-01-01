@@ -602,6 +602,53 @@ static void yvy2ToUV_c(uint8_t *dstU, uint8_t *dstV, const uint8_t *unused0, con
 y21xle_wrapper(10, 6)
 y21xle_wrapper(12, 4)
 
+
+static void uyvy422_10le_UV_c(uint8_t *dstU, uint8_t *dstV,      
+                                    const uint8_t *unused0,            
+                                    const uint8_t *src,                
+                                    const uint8_t *unused1, int width, 
+                                    uint32_t *unused2, void *opq)      
+{   
+    const uint16_t Mask10bit = 0x03FF;
+    int i;                                                           
+    for (i = 0; i < width; i++)                                
+    {
+        const uint8_t* Src = &src[i*5];
+        uint16_t Cr = ((Src[0] << 2) | (Src[1] >> 6)) & Mask10bit;
+        //uint16_t Y1 = ((Src[1] << 4) | (Src[2] >> 4)) & Mask10bit;
+        uint16_t Cb = ((Src[2] << 6) | (Src[3] >> 2)) & Mask10bit;
+        //uint16_t Y2 = ((Src[3] << 8) | (Src[4])) & Mask10bit;
+
+        AV_WN16(dstU + i * 2, Cr);         
+        AV_WN16(dstV + i * 2, Cb);         
+    }
+
+}                                                                    
+                                                                        
+static void uyvy422_10le_Y_c(uint8_t *dst, const uint8_t *src,   
+                                    const uint8_t *unused0,             
+                                    const uint8_t *unused1, int width,  
+                                    uint32_t *unused2, void *opq)       
+{        
+    const uint16_t Mask10bit = 0x03FF;
+    int i;                                                           
+    for (i = 0; i < width / 2; i++)                                
+    {
+        const uint8_t* Src = &src[i*5];
+        //uint16_t Cr = ((Src[0] << 2) | (Src[1] >> 6)) & Mask10bit;
+        uint16_t Y1 = ((Src[1] << 4) | (Src[2] >> 4)) & Mask10bit;
+        //uint16_t Cb = ((Src[2] << 6) | (Src[3] >> 2)) & Mask10bit;
+        uint16_t Y2 = ((Src[3] << 8) | (Src[4])) & Mask10bit;
+
+        AV_WN16(dst + i * 4, Y1);         
+        AV_WN16(dst + i * 4 + 2, Y2);         
+    }
+         
+        
+}
+
+
+
 static void bswap16Y_c(uint8_t *_dst, const uint8_t *_src, const uint8_t *unused1, const uint8_t *unused2, int width,
                        uint32_t *unused, void *opq)
 {
@@ -1477,6 +1524,9 @@ av_cold void ff_sws_init_input_funcs(SwsContext *c)
     case AV_PIX_FMT_Y210LE:
         c->chrToYV12 = y210le_UV_c;
         break;
+    case AV_PIX_FMT_UYVY422_10:
+        c->chrToYV12 = uyvy422_10le_UV_c;
+        break;
     case AV_PIX_FMT_Y212LE:
         c->chrToYV12 = y212le_UV_c;
         break;
@@ -1972,6 +2022,9 @@ av_cold void ff_sws_init_input_funcs(SwsContext *c)
         break;
     case AV_PIX_FMT_Y210LE:
         c->lumToYV12 = y210le_Y_c;
+        break;
+    case AV_PIX_FMT_UYVY422_10:
+        c->lumToYV12 = uyvy422_10le_Y_c;
         break;
     case AV_PIX_FMT_Y212LE:
         c->lumToYV12 = y212le_Y_c;

@@ -53,6 +53,7 @@ static const enum AVPixelFormat packed_list[] = {
     AV_PIX_FMT_Y212,
     AV_PIX_FMT_Y210,
     AV_PIX_FMT_YUYV422,
+    AV_PIX_FMT_UYVY422_10,
 };
 
 static const enum AVPixelFormat subsampled_list[] = {
